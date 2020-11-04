@@ -1,0 +1,59 @@
+table#map {
+    border-collapse: collapse;
+    border: 4px solid black;
+    display: inline-table;
+    vertical-align: top;
+
+    background: white;
+}
+table#map td {
+    background: white;
+    width: 75px;
+    height: 75px;
+    background: white;
+    background-size: contain;
+    background-repeat: repeat-x;
+    position: relative;
+    cursor: pointer;
+}
+table#map td::before {
+    content: attr(abrev);
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+
+    line-height: 75px;
+    text-align: center;
+}
+table#map td:hover::before {
+    content: attr(terrain) ' (' attr(altitude) ')';
+    border: 5px solid gold;
+    
+    line-height: 1;
+    text-align: left;
+}
+table#map td:not([terrain=river]):not([terrain=delta]):not([terrain=lake]):hover::after {
+    border: 5px solid gold ! important;
+}
+
+table#map td[terrain=swamp] {
+    background-color: teal;
+}
+table#map td[terrain=mountain] {
+    background-color: lightpink;
+}
+table#map td[terrain=volcano] {
+    background-color: maroon;
+}
+table#map td[terrain=forest] {
+    background-color: forestgreen;
+}
+table#map td[terrain=beach],
+table#map td[terrain=cliff],
+table#map td[terrain=delta] {
+    background-color: lightyellow;
+}

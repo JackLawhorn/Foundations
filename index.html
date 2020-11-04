@@ -1,0 +1,109 @@
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<script src="MapObject.js"></script>
+<script src="TerrainObject.js"></script>
+<script>
+    var map   = undefined;
+    var saved = JSON.parse(localStorage.getItem("saved"));
+    if(saved == undefined) saved = [];
+
+    function init() {
+        map = new MapObject(10);
+
+        $(saved).each(function(i, s) { $("ul#saves").append(drawNewSave(s, i)); });
+    }
+
+    function save() {
+        var newSave = map.getObj();
+        saved.push(newSave);
+        localStorage.setItem("saved", JSON.stringify(saved));
+
+        $("ul#saves").append(drawNewSave(newSave));
+    }
+
+    function drawNewSave(saveObj, i) {
+        if(i == undefined) i = saved.length - 1;
+
+        var listItem   = $("<li />"),
+            label   = $("<span>" + i + "</span>"),
+            loadThis   = $("<button>Load</button>"),
+            deleteThis = $("<button>X</button>");
+
+        $(loadThis).click(function() { load(saveObj); });
+        $(deleteThis).click(function() {
+            saved.splice(saved.indexOf(saveObj), 1);
+            $(listItem).remove();
+            localStorage.setItem("saved", JSON.stringify(saved));
+        });
+
+        listItem.append(
+            label,
+            $("<div />").append(loadThis, deleteThis)
+        );
+        
+        return listItem;
+    }
+
+    function load(saveObj) {
+        $("table#map").empty();
+        map.setObj(saveObj);
+    }
+
+    function reload() {
+        $("table#map").empty();
+        map = new MapObject(10);
+    }
+
+</script>
+
+<link rel="stylesheet" type="text/css" href="style/interface.css">
+<link rel="stylesheet" type="text/css" href="style/map.css">
+<link rel="stylesheet" type="text/css" href="style/water.css">
+<style>
+    body {
+        font-family: monospace;
+        font-size: 16pt;
+    }
+</style>   
+
+<html>
+    <body onload="init()">
+        <section id="tools">
+            <details id="save-load">
+                <summary>SAVE & LOAD</summary>
+                <div>
+                    <button onclick="reload()">Reload</button>
+                    <button onclick="save()">Save</button>
+                </div>
+                <ul id="saves"></ul>
+            </details>
+            <details id="stats" open>
+                <summary>TERRITORY STATS</summary>
+                <ul>
+                    <div>- LAND-SEA MAKE-UP -</div>
+                    <li><b>WATER</b> <span id="water">0%</span></li>
+                    <li><b>LAND</b> <span id="land">0%</span></li>
+                    <li><b>COAST</b> <span id="coast">0%</span></li>
+                    <li><b>BEACH</b> <span id="beaches">0%</span></li>
+                    <li><b>CLIFF</b> <span id="cliffs">0%</span></li>
+                    <br />
+                    <div>- BODIES OF WATER -</div>
+                    <li><b>OCEAN</b> <span id="ocean">0%</span></li>
+                    <li><b>RIVER</b> <span id="river">0%</span></li>
+                    <li><b>LAKES</b> <span id="lakes">0%</span></li>
+                    <li><b>SWAMP</b> <span id="swamp">0</span></li>
+                    <br />
+                    <div>- ALTITUDE -</div>
+                    <li><b>BELOW SEA LEVEL</b> <span id="high">0%</span></li>
+                    <li><b>ABOVE SEA LEVEL</b> <span id="low">0%</span></li>
+                    <li><b>MOUNTAINS</b> <span id="mountains">0%</span></li>
+                    <li><b>HILLS</b> <span id="hills">0%</span></li>
+                    <li><b>PLAINS</b> <span id="plains">0%</span></li>
+                    <li><b>VALLEYS</b> <span id="valleys">0%</span></li>
+                </ul>
+            </details>
+        </section>
+        <table id="map"></table>
+    </body>
+    </html>

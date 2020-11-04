@@ -1,0 +1,137 @@
+table#map td[terrain=ocean],
+table#map td[terrain=lake],
+table#map td[terrain=cove],
+table#map td[terrain=coast] {
+    background-color: #29ABE2;
+    color: white;
+}
+table#map td[terrain=ocean] {
+    background: rgb(36, 150, 198);
+}
+table#map td[terrain=lake].n.e,
+table#map td[terrain=lake].n.e:after {
+    border-top-right-radius: 50% !important;
+}
+table#map td[terrain=lake].s.e,
+table#map td[terrain=lake].s.e:after {
+    border-bottom-right-radius: 50% !important;
+}
+table#map td[terrain=lake].s.w,
+table#map td[terrain=lake].s.w:after {
+    border-bottom-left-radius: 50% !important;
+}
+table#map td[terrain=lake].n.w,
+table#map td[terrain=lake].n.w:after {
+    border-top-left-radius: 50% !important;
+}
+table#map td[terrain=river]::after,
+table#map td[terrain=delta]::after {
+    content: '';
+    display: block;
+    width: 30px;
+    height: 30px;
+
+    margin: auto auto;
+    background: rgb(148, 213, 241);
+    border-radius: 50%;
+}
+
+
+/* Draws coastal edges */
+table#map td[terrain=coast]::after,
+table#map td[terrain=cove]::after,
+table#map td[terrain=lake]::after {
+    content: '';
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+table#map td[terrain=coast].n::after,
+table#map td[terrain=cove].n::after,
+table#map td[terrain=lake].n::after {
+    border-top: 5px solid rgb(148, 213, 241);
+}
+table#map td[terrain=coast].e::after,
+table#map td[terrain=cove].e::after,
+table#map td[terrain=lake].e::after {
+    border-right: 5px solid rgb(148, 213, 241);
+}
+table#map td[terrain=coast].s::after,
+table#map td[terrain=cove].s::after,
+table#map td[terrain=lake].s::after {
+    border-bottom: 5px solid rgb(148, 213, 241);
+}
+table#map td[terrain=coast].w::after,
+table#map td[terrain=cove].w::after,
+table#map td[terrain=lake].w::after {
+    border-left: 5px solid rgb(148, 213, 241);
+}
+
+/* Draws coastal corners */
+table#map td div.water-helper {
+    content: '';
+    display: none;
+    width: 5px;
+    height: 5px;
+    position: absolute;
+    
+    background-color: rgb(148, 213, 241);
+}
+table#map td.ne:not(.n):not(.e) div.water-helper.ne {
+    display: block;
+    top: 0px;
+    right: 0px;
+    border-bottom-left-radius: 10px
+}
+table#map td.se:not(.s):not(.e) div.water-helper.se {
+    display: block;
+    bottom: 0px;
+    right: 0px;
+    border-top-left-radius: 10px
+}
+table#map td.sw:not(.s):not(.w) div.water-helper.sw {
+    display: block;
+    bottom: 0px;
+    left: 0px;
+    border-top-right-radius: 10px
+}
+table#map td.nw:not(.n):not(.w) div.water-helper.nw {
+    display: block;
+    top: 0px;
+    left: 0px;
+    border-bottom-right-radius: 10px
+}
+
+/* Tweaking land corners to round landmass edges */
+table#map td:not([terrain=lake]):not([terrain=coast]):not([terrain=cove]).n.e.ne {
+    border-top-right-radius: 2.5px;
+}
+table#map td:not([terrain=lake]):not([terrain=coast]):not([terrain=cove]).s.e.se {
+    border-bottom-right-radius: 2.5px;
+}
+table#map td:not([terrain=lake]):not([terrain=coast]):not([terrain=cove]).s.w.sw {
+    border-bottom-left-radius: 2.5px;
+}
+table#map td:not([terrain=lake]):not([terrain=coast]):not([terrain=cove]).n.w.nw {
+    border-top-left-radius: 2.5px;
+}
+table#map td:not([terrain=cliff]):not([terrain=beach]):not([terrain=delta]).n.e.ne,
+table#map td:not([terrain=cliff]):not([terrain=beach]):not([terrain=delta]).n.e.ne::after {
+    border-top-right-radius: 7.5px;
+}
+table#map td:not([terrain=cliff]):not([terrain=beach]):not([terrain=delta]).s.e.se,
+table#map td:not([terrain=cliff]):not([terrain=beach]):not([terrain=delta]).s.e.se::after {
+    border-bottom-right-radius: 7.5px;
+}
+table#map td:not([terrain=cliff]):not([terrain=beach]):not([terrain=delta]).s.w.sw,
+table#map td:not([terrain=cliff]):not([terrain=beach]):not([terrain=delta]).s.w.sw::after {
+    border-bottom-left-radius: 7.5px;
+}
+table#map td:not([terrain=cliff]):not([terrain=beach]):not([terrain=delta]).n.w.nw,
+table#map td:not([terrain=cliff]):not([terrain=beach]):not([terrain=delta]).n.w.nw::after {
+    border-top-left-radius: 7.5px;
+}
