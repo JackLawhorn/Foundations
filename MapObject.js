@@ -21,6 +21,10 @@ class MapObject {
         this.fillStats();
     }
 
+    setTerrainAtCoord(x, y, newTerrain) {
+        this.map[x][y] = newTerrain;
+    }
+
     // Fill in terrain altitudes at random
     fillAltitude() {
         for(var y = 1; y <= this.size; y++) {
@@ -153,7 +157,7 @@ class MapObject {
 
         var mountains = this.search({ ts: ["mountain"] });
         $(mountains).each(function() {
-            thisObj.riverHelper(this);
+            thisObj.riverHelper(this, undefined);
         }); 
 
         var rivers = this.search({ ts: ["river"], });
@@ -172,29 +176,31 @@ class MapObject {
         var forests = this.search({ ts: ["hill", "plain", "lowland"], adjacentTerrain: ["lake", "river", "delta", "swamp"], });
         $(forests).each(function() { this.setTerrain("forest"); });
     }
-    riverHelper(s) {
+    riverHelper(s, from) {
         var thisObj = this,
-            n = undefined;
+            to = undefined;
 
         if(s != undefined) {
-            if(s.getTerrain() != "mountain") s.setTerrain("river");
             if(!this.adjacentTo(s, [], ["coast", "cove", "ocean"], 1, false) &&
                !this.adjacentTo(s, [], ["river", "delta"], 1, true)) {
                 var adj = this.adjacents(s, false);
                 $(adj).each(function() {
                     if(this != undefined) {
-                        if(n == undefined)
-                            n = this;
+                        if(to == undefined)
+                            to = this;
                         else if((this.getTerrain() == "beach" || this.getTerrain() == "cliff") &&
-                                n.getTerrain() != "beach" && n.getTerrain() != "cliff")
-                            n = this;
-                        else if(((this.getAltitude() <= s.getAltitude() && this.getAltitude() <= n.getAltitude) ||
+                                to.getTerrain() != "beach" && to.getTerrain() != "cliff")
+                            to = this;
+                        else if(((this.getAltitude() <= s.getAltitude() && this.getAltitude() <= to.getAltitude()) ||
                                  this.getAltitude() <= 0) && this.getTerrain() != "river" &&
-                                 n.getTerrain() != "beach" && n.getTerrain() != "cliff")
-                            n = this;
+                                 to.getTerrain() != "beach" && to.getTerrain() != "cliff")
+                                 to = this;
                     }
                 });
-                if(n != undefined) this.riverHelper(n);
+                if(s.getTerrain() != "mountain") {
+                    s.setTerrain("river", thisObj, from, to);
+                }
+                if(to != undefined) this.riverHelper(to, s);
             }
         }
     }

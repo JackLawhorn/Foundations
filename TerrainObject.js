@@ -23,8 +23,13 @@ class TerrainObject {
     getTerrain() {
         return this.terrain;
     }
-    setTerrain(terrain) {
-        this.terrain = terrain;
+    setTerrain(terrain, map, from, to) {
+        if(terrain == "river" || terrain == "delta") {
+            var newTerrain = new RiverTerrain(this.x, this.y, this.a, from, to);
+            newTerrain.setTerrain(terrain);
+            map.setTerrainAtCoord(this.x, this.y, newTerrain);
+        }
+        else this.terrain = terrain;
     }
 
     adjustEdges(adj, size) {
