@@ -156,15 +156,22 @@ class MapObject {
         var thisObj = this;
 
         var mountains = this.search({ ts: ["mountain"] });
-        $(mountains).each(function() {
-            thisObj.riverHelper(this, undefined);
-        }); 
+        $(mountains).each(function(i) {
+            if(Math.floor(Math.random()*2)%2==0 && !thisObj.adjacentTo(this, [], ["river", "delta", "lake"], 1, true))
+                thisObj.riverHelper(this, this);
+        });
 
         var rivers = this.search({ ts: ["river"], });
         $(rivers).each(function() {
-            if(this.getAltitude() == -2) this.setTerrain("lake");
-            else if(thisObj.adjacentTo(this, [], ["coast", "ocean", "cove"], 1, true))
+            if((!thisObj.adjacentTo(this, [], ["river", "delta"], 1, false) &&
+                !thisObj.adjacentTo(this, [], ["coast", "cove"], 1, false)) ||
+               this.getAltitude() == -2) {
+                this.setTerrain("lake", thisObj);
+            }
+            else if(thisObj.adjacentTo(this, [], ["coast", "ocean", "cove"], 1, false)) {
+                this.setAltitude(0);
                 this.setTerrain("delta");
+            }
         });
 
         var valleys = this.search({ as: [-1, -2], ts: ["lowland", "valley"], adjacentTerrain: ["river", "delta", "lake"], adjacentDiagonal: true });
@@ -173,34 +180,33 @@ class MapObject {
             if(thisObj.adjacentTo(this, [], ["river", "delta", "lake"], 1, false)) this.setTerrain("swamp");
         });
 
-        var forests = this.search({ ts: ["hill", "plain", "lowland"], adjacentTerrain: ["lake", "river", "delta", "swamp"], });
+        var forests = this.search({ ts: ["hill", "plain", "lowland"], adjacentTerrain: ["lake", "delta", "swamp"], });
         $(forests).each(function() { this.setTerrain("forest"); });
     }
     riverHelper(s, from) {
         var thisObj = this,
-            to = undefined;
+            to = undefined,
+            prio = ["cove", "coast", "beach", "cliff"];
 
         if(s != undefined) {
-            if(!this.adjacentTo(s, [], ["coast", "cove", "ocean"], 1, false) &&
-               !this.adjacentTo(s, [], ["river", "delta"], 1, true)) {
+            if(!(s.getTerrain() == "river" || s.getTerrain() == "delta" ||
+                 s.getTerrain() == "coast" || s.getTerrain() == "cove")) {
                 var adj = this.adjacents(s, false);
                 $(adj).each(function() {
                     if(this != undefined) {
-                        if(to == undefined)
+                        if(to == undefined) to = this;
+                        else if(prio.indexOf(this.getTerrain()) >= 0 &&
+                                prio.indexOf(this.getTerrain()) < prio.indexOf(to.getTerrain()))
+                            if(prio.indexOf(this.getTerrain()) < prio.indexOf(to.getTerrain()))
+                                to = this;
+                        else if(prio.indexOf(to.getTerrain()) == -1 && prio.indexOf(s.getTerrain()) == -1 &&
+                                this.getAltitude() < s.getAltitude() && this.getAltitude() < to.getAltitude())
                             to = this;
-                        else if((this.getTerrain() == "beach" || this.getTerrain() == "cliff") &&
-                                to.getTerrain() != "beach" && to.getTerrain() != "cliff")
-                            to = this;
-                        else if(((this.getAltitude() <= s.getAltitude() && this.getAltitude() <= to.getAltitude()) ||
-                                 this.getAltitude() <= 0) && this.getTerrain() != "river" &&
-                                 to.getTerrain() != "beach" && to.getTerrain() != "cliff")
-                                 to = this;
                     }
                 });
-                if(s.getTerrain() != "mountain") {
-                    s.setTerrain("river", thisObj, from, to);
-                }
-                if(to != undefined) this.riverHelper(to, s);
+
+                if(s.getTerrain() != "mountain") s.setTerrain("river", thisObj, from, to);
+                this.riverHelper(to, s);
             }
         }
     }
@@ -377,7 +383,7 @@ class MapObject {
             for(var y = 1; y <= this.size; y++) {
                 var s = obj[x][y];
                 var newObj = new TerrainObject(s.x, s.y, s.altitude);
-                newObj.setTerrain(s.terrain);
+                newObj.setTerrain(s.terrain, this, s.from, s.to);
                 this.map[x][y] = newObj;
             }
         }

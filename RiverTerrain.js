@@ -11,32 +11,51 @@ class RiverTerrain extends TerrainObject {
         this.class = "";
     }
 
-    setTerrain(terrain) {
+    getX() { return this.x; }
+    getY() { return this.y; }
+    getAltitude() { return this.altitude; }
+    getTerrain() { return this.terrain; }
+
+    setTerrain(terrain, map, from, to) {
         if(terrain != "river" && terrain != "delta") {
-            var newTerrain = new TerrainObject(this.x, this.y, this.a);
+            var newTerrain = new TerrainObject(this.x, this.y, this.altitude);
             newTerrain.setTerrain(terrain);
-            map.setTerrainAtCoord(newTerrain);
+            map.setTerrainAtCoord(this.x, this.y, newTerrain);
         }
         else this.terrain = terrain;
     }
 
     adjustEdges(adj, size) {
-        var dirs = [];
-            
+        var dirs = [],
+            ts = ["river", "delta", "lake", "coast", "cove"];
+
         if(this.from == undefined) {}
         else {
-            if(this.from.getY() < this.x) dirs.push("n");
+            if(this.from.getY() < this.y) dirs.push("n");
             if(this.from.getX() > this.x) dirs.push("e");
-            if(this.from.getY() > this.x) dirs.push("s");
+            if(this.from.getY() > this.y) dirs.push("s");
             if(this.from.getX() < this.x) dirs.push("w");
         }
         if(this.to == undefined) {}
         else {
-            if(this.to.getY() < this.x) dirs.push("n");
+            if(this.to.getY() < this.y) dirs.push("n");
             if(this.to.getX() > this.x) dirs.push("e");
-            if(this.to.getY() > this.x) dirs.push("s");
+            if(this.to.getY() > this.y) dirs.push("s");
             if(this.to.getX() < this.x) dirs.push("w");
         }
+
+        // // North
+        // if(this.y > 1 && ts.indexOf(adj[0].getTerrain()) >= 0)
+        //     dirs.push("n")
+        // // East
+        // if(this.x < size && ts.indexOf(adj[2].getTerrain()) >= 0)
+        //     dirs.push("e")
+        // // South
+        // if(this.y < size && ts.indexOf(adj[4].getTerrain()) >= 0)
+        //     dirs.push("s")
+        // // West
+        // if(this.x > 1 && ts.indexOf(adj[6].getTerrain()) >= 0)
+        //     dirs.push("w")
        
         this.class = dirs.join(" ");
     }

@@ -25,7 +25,7 @@ class TerrainObject {
     }
     setTerrain(terrain, map, from, to) {
         if(terrain == "river" || terrain == "delta") {
-            var newTerrain = new RiverTerrain(this.x, this.y, this.a, from, to);
+            var newTerrain = new RiverTerrain(this.x, this.y, this.altitude, from, to);
             newTerrain.setTerrain(terrain);
             map.setTerrainAtCoord(this.x, this.y, newTerrain);
         }
